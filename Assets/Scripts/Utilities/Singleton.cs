@@ -11,52 +11,40 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 
     private static object _lock = new object();
 
-    public static T Instance
+   public static T Instance
+{
+    get
     {
-        get
+        if (applicationIsQuitting)
         {
-            if (applicationIsQuitting)
+            Debug.LogWarning($"[Singleton] Instance '{typeof(T)}' already destroyed on application quit. Won't create again - returning null.");
+            return null;
+        }
+
+        if (_instance == null)
+        {
+            // Busca cualquier instancia suelta en la escena
+            _instance = Object.FindAnyObjectByType<T>();
+
+            // CORRECCIÓN AQUÍ: Quitamos el FindObjectsSortMode obsoleto
+            if (Object.FindObjectsByType<T>().Length > 1)
             {
-                Debug.LogWarning("[Singleton] Instance '" + typeof(T) +
-                    "' already destroyed on application quit." +
-                    " Won't create again - returning null.");
-                return null;
-            }
-
-            lock (_lock)
-            {
-                if (_instance == null)
-                {
-                    _instance = (T)FindObjectOfType(typeof(T));
-
-                    if (FindObjectsOfType(typeof(T)).Length > 1)
-                    {
-                        Debug.LogError("[Singleton] Something went really wrong " +
-                            " - there should never be more than 1 singleton!" +
-                            " Reopening the scene might fix it.");
-                        return _instance;
-                    }
-
-                    if (_instance == null)
-                    {
-                        GameObject singleton = new GameObject();
-                        _instance = singleton.AddComponent<T>();
-                        singleton.name = "(singleton) " + typeof(T).ToString();
-
-                        Debug.Log("[Singleton] An instance of " + typeof(T) +
-                            " is needed in the scene, so '" + singleton +
-                            "' was created.");
-                    }
-                    else
-                    {
-                        //Debug.Log("[Singleton] Using instance already created: " + _instance.gameObject.name);
-                    }
-                }
-
+                Debug.LogError($"[Singleton] Something went really wrong - there should never be more than 1 singleton of {typeof(T)}!");
                 return _instance;
             }
+
+            if (_instance == null)
+            {
+                GameObject singleton = new GameObject($"(singleton) {typeof(T)}");
+                _instance = singleton.AddComponent<T>();
+
+                Debug.Log($"[Singleton] An instance of {typeof(T)} was needed in the scene, so '{singleton.name}' was created.");
+            }
         }
+
+        return _instance;
     }
+}
 
     private static bool IsDontDestroyOnLoad()
     {

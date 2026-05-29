@@ -18,18 +18,18 @@ public class UIMenuManager : Singleton<UIMenuManager>
 
     public void SetupUIMenuPlayerPanelList()
     {
-        DestroyPlaceholderObjects();
+        //DestroyPlaceholderObjects();
         GetCurrentPlayerDatas();
         SetupCurrentPlayerUIMenuPanels();
     }
 
-    void DestroyPlaceholderObjects()
+    /*void DestroyPlaceholderObjects()
     {
         for(int i = 0; i < placeholderGameObjects.Length; i++)
         {
             Destroy(placeholderGameObjects[i]);
         }
-    }
+    }*/
 
     void GetCurrentPlayerDatas()
     {
@@ -77,6 +77,6 @@ public class UIMenuManager : Singleton<UIMenuManager>
             UpdateCurrentPlayerUIMenuPanels();
         }
         
-        UICamera.enabled = newState;
+        //UICamera.enabled = newState;
     }
 }

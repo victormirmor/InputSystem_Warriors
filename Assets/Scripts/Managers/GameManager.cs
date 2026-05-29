@@ -5,7 +5,6 @@ using UnityEngine.Rendering.Universal;
 
 public class GameManager : Singleton<GameManager>
 {
-
     [Header("Camera")]
     public Camera mainCamera;
 
@@ -21,11 +20,8 @@ public class GameManager : Singleton<GameManager>
     public Transform spawnRingCenter;
     public float spawnRingRadius;
 
-    //Spawned Players
+    // Lista de jugadores generados
     private List<PlayerController> activePlayerControllers;
-
-    [Header("UI")]
-    public GameObject pauseMenu;
 
     void Start()
     {
@@ -40,33 +36,29 @@ public class GameManager : Singleton<GameManager>
 
     void SetupActivePlayers()
     {
-
         activePlayerControllers = new List<PlayerController>(numberOfPlayers);
 
-        if(spawnMultiplePlayers)
+        if (spawnMultiplePlayers)
         {
-
             Destroy(inScenePlayer);
             SpawnPlayers();
-
         }
-        else if(!spawnMultiplePlayers)
+        else // Simplificado: si no es true, por descarte es false
         {
-
-            PlayerController inScenePlayerController = inScenePlayer.GetComponent<PlayerController>();
-            activePlayerControllers.Add(inScenePlayerController);
+            if (inScenePlayer != null)
+            {
+                PlayerController inScenePlayerController = inScenePlayer.GetComponent<PlayerController>();
+                activePlayerControllers.Add(inScenePlayerController);
+            }
 
             SetupUIMenuPlayerList();
-
         }
     }
 
     void SpawnPlayers()
     {
-
-        for(int i = 0; i < numberOfPlayers; i++)
+        for (int i = 0; i < numberOfPlayers; i++)
         {
-
             GameObject spawnedPlayer = Instantiate(playerPrefab, transform.position, transform.rotation);
             
             activePlayerControllers.Insert(i, spawnedPlayer.GetComponent<PlayerController>());
@@ -76,7 +68,6 @@ public class GameManager : Singleton<GameManager>
 
             Quaternion randomSpawnRotation = Quaternion.Euler(new Vector3(0, Random.Range(0, 360), 0));
             spawnedPlayer.transform.rotation = randomSpawnRotation;
-
         }
 
         SetupUIMenuPlayerList();
@@ -87,30 +78,6 @@ public class GameManager : Singleton<GameManager>
         UIMenuManager.Instance.SetupUIMenuPlayerPanelList();
     }
 
-
-    public void TogglePauseMenu(bool newState)
-    {
-
-        
-        UIMenuManager.Instance.ToggleMenu(newState);
-   
-        for(int i = 0; i < activePlayerControllers.Count; i++)
-        {
-            //Pause Menu Is On -> Switch from Player Controls to Menu Controls
-            if(newState == true)
-            {
-                activePlayerControllers[i].EnablePauseMenuControls();
-            }
-            //Pause Menu Is Off -> Switch from Menu Controls to Player Controls
-            else if(newState == false)
-            {
-                activePlayerControllers[i].EnableGameplayControls();
-            }
-
-        }
-        
-    }
-
     public List<PlayerController> GetActivePlayerControllers()
     {
         return activePlayerControllers;
@@ -118,14 +85,12 @@ public class GameManager : Singleton<GameManager>
 
     Vector3 PositionInRing(int positionID)
     {
-
-        if(numberOfPlayers == 1)
+        if (numberOfPlayers == 1)
             return spawnRingCenter.position;
 
-        float angle = (positionID) * Mathf.PI * 2 / numberOfPlayers;
+        float angle = positionID * Mathf.PI * 2 / numberOfPlayers;
         float x = Mathf.Cos(angle) * spawnRingRadius;
         float z = Mathf.Sin(angle) * spawnRingRadius;
-        return spawnRingCenter.position +  new Vector3(x, 0, z);
+        return spawnRingCenter.position + new Vector3(x, 0, z);
     }
-
 }

@@ -4,7 +4,7 @@ using System.Collections;
 [ExecuteAlways]
 public class UIBillboardBehaviour : MonoBehaviour
 {
-    public Camera camera;
+    public new Camera camera;
 
     void OnEnable()
     {

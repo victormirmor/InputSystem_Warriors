@@ -94,15 +94,15 @@ public class PlayerController : MonoBehaviour
     }
 
     // Control de menús original
-    private void OnOpenPauseMenu(InputValue value)
+    /*private void OnOpenPauseMenu(InputValue value)
     {
         if(value.isPressed) GameManager.Instance.TogglePauseMenu(true);
-    }
+    }*/
 
-    private void OnClosePauseMenu(InputValue value)
+    /*private void OnClosePauseMenu(InputValue value)
     {
         if(value.isPressed) GameManager.Instance.TogglePauseMenu(false);
-    }
+    }*/
 
     public void EnableGameplayControls() => playerInput.SwitchCurrentActionMap(actionMapGameplay);
     public void EnablePauseMenuControls() => playerInput.SwitchCurrentActionMap(actionMapMenu);
