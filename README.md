@@ -42,7 +42,7 @@ You can learn more about the Input System here: https://unity.com/features/input
 ## Tech Info
 
 **Unity Version**
-- Current: [6000.3.0f1](https://unity.com/releases/unity-6)
+- Current: Unity 6.4 [6000.4.8f1](https://unity.com/releases/unity-6)
 
 **Packages**
 - com.unity.inputsystem: 1.16.0
