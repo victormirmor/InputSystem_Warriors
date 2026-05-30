@@ -1366,7 +1366,7 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
   m_Enabled: 1
-  serializedVersion: 12
+  serializedVersion: 13
   m_Type: 1
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   m_Intensity: 1
@@ -1418,7 +1418,7 @@ Light:
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ForceVisible: 0
-  m_ShadowRadius: 0
+  m_ShapeRadius: 0
   m_ShadowAngle: 0
   m_LightUnit: 1
   m_LuxAtDistance: 1
@@ -2534,7 +2534,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentGameMode: 0
   inScenePlayer: {fileID: 16277595}
-  singlePlayerCameraMode: 0
+  singlePlayerCameraMode: 1
   playerPrefab: {fileID: 1743518200311987069, guid: ca9ee4e0ea2b85646be0b08bab27e559,
     type: 3}
   numberOfPlayers: 2
@@ -3853,6 +3853,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
+  m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0

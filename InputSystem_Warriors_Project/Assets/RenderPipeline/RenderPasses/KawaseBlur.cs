@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.Rendering.RenderGraphModule;
 
 public class KawaseBlur : ScriptableRendererFeature
 {
@@ -12,10 +13,10 @@ public class KawaseBlur : ScriptableRendererFeature
         public RenderPassEvent renderPassEvent = RenderPassEvent.AfterRenderingTransparents;
         public Material blurMaterial = null;
 
-        [Range(2,15)]
+        [Range(2, 15)]
         public int blurPasses = 1;
 
-        [Range(1,4)]
+        [Range(1, 4)]
         public int downsample = 1;
         public bool copyToFramebuffer;
         public string targetName = "_blurTexture";
@@ -30,16 +31,13 @@ public class KawaseBlur : ScriptableRendererFeature
         public int downsample;
         public bool copyToFramebuffer;
         public string targetName;        
-        string profilerTag;
+        private string profilerTag;
 
-        private RTHandle rtHandle1;
-        private RTHandle rtHandle2;
-
-        private RTHandle source;
-
-        public void Setup(RTHandle source)
+        private class PassData
         {
-            this.source = source;
+            public TextureHandle source;
+            public Material material;
+            public float offset;
         }
 
         public CustomRenderPass(string profilerTag)
@@ -47,69 +45,92 @@ public class KawaseBlur : ScriptableRendererFeature
             this.profilerTag = profilerTag;
         }
 
-        [Obsolete]
-        public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
+        public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
         {
-            // Allocate temporary RTHandles based on camera size and downsample
-            var width = cameraTextureDescriptor.width / downsample;
-            var height = cameraTextureDescriptor.height / downsample;
+            if (blurMaterial == null) return;
 
-            rtHandle1 = RTHandles.Alloc(
-                width, height,
-                depthBufferBits: DepthBits.None,
-                colorFormat: UnityEngine.Experimental.Rendering.GraphicsFormat.R8G8B8A8_UNorm,
-                name: "tmpBlurRT1");
+            UniversalCameraData cameraData = frameData.Get<UniversalCameraData>();
+            UniversalResourceData resourceData = frameData.Get<UniversalResourceData>();
 
-            rtHandle2 = RTHandles.Alloc(
-                width, height,
-                depthBufferBits: DepthBits.None,
-                colorFormat: UnityEngine.Experimental.Rendering.GraphicsFormat.R8G8B8A8_UNorm,
-                name: "tmpBlurRT2");
+            TextureHandle activeColor = resourceData.activeColorTexture;
+            if (!activeColor.IsValid()) return;
 
-            ConfigureTarget(rtHandle1);
-            ConfigureClear(ClearFlag.None, Color.black);
-        }
+            // Configurar tamaño con Downsampling
+            RenderTextureDescriptor desc = cameraData.cameraTargetDescriptor;
+            desc.width = Mathf.Max(1, desc.width / downsample);
+            desc.height = Mathf.Max(1, desc.height / downsample);
+            desc.depthBufferBits = 0;
 
-        [Obsolete]
-        public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
-        {
-            CommandBuffer cmd = CommandBufferPool.Get(profilerTag);
+            // Creamos las dos texturas temporales para el ping-pong
+            TextureHandle rt1 = renderGraph.CreateTexture(new TextureDesc(desc) { name = "tmpBlurRT1" });
+            TextureHandle rt2 = renderGraph.CreateTexture(new TextureDesc(desc) { name = "tmpBlurRT2" });
 
-            // first pass
-            cmd.SetGlobalFloat("_offset", 1.5f);
-            cmd.Blit(source, rtHandle1, blurMaterial);
+            TextureHandle currentSource = activeColor;
+            TextureHandle currentDest = rt1;
 
+            // --- PRIMER PASE ---
+            ExecuteBlurPass(renderGraph, currentSource, currentDest, 1.5f);
+
+            // --- PASES INTERMEDIOS (Ping-Pong) ---
             for (int i = 1; i < passes - 1; i++)
             {
-                cmd.SetGlobalFloat("_offset", 0.5f + i);
-                cmd.Blit(rtHandle1, rtHandle2, blurMaterial);
+                currentSource = currentDest;
+                currentDest = (currentDest == rt1) ? rt2 : rt1;
 
-                // ping-pong
-                (rtHandle1, rtHandle2) = (rtHandle2, rtHandle1);
+                ExecuteBlurPass(renderGraph, currentSource, currentDest, 0.5f + i);
             }
 
-            // final pass
-            cmd.SetGlobalFloat("_offset", 0.5f + passes - 1f);
+            // --- ÚLTIMO PASE ---
+            float finalOffset = 0.5f + passes - 1f;
             if (copyToFramebuffer)
             {
-                cmd.Blit(rtHandle1, source, blurMaterial);
+                // Devolvemos el resultado a la pantalla principal
+                ExecuteBlurPass(renderGraph, currentDest, activeColor, finalOffset);
             }
             else
             {
-                cmd.Blit(rtHandle1, rtHandle2, blurMaterial);
-                cmd.SetGlobalTexture(targetName, rtHandle2);
+                // Guardamos el resultado en la textura final y la volvemos global
+                TextureHandle finalDest = (currentDest == rt1) ? rt2 : rt1;
+                ExecuteBlurPass(renderGraph, currentDest, finalDest, finalOffset);
+                
+                // Hacemos que la textura final sea global para otros shaders en un pase posterior dedicado
+                MakeTextureGlobal(renderGraph, finalDest, targetName);
             }
-
-            context.ExecuteCommandBuffer(cmd);
-            cmd.Clear();
-
-            CommandBufferPool.Release(cmd);
         }
 
-        public override void FrameCleanup(CommandBuffer cmd)
+        // Método auxiliar para registrar cada pase individual de Blit en el Render Graph
+        private void ExecuteBlurPass(RenderGraph renderGraph, TextureHandle source, TextureHandle destination, float offset)
         {
-            if (rtHandle1 != null) { rtHandle1.Release(); rtHandle1 = null; }
-            if (rtHandle2 != null) { rtHandle2.Release(); rtHandle2 = null; }
+            using (var builder = renderGraph.AddRasterRenderPass<PassData>(profilerTag, out var passData))
+            {
+                passData.source = source;
+                passData.material = blurMaterial;
+                passData.offset = offset;
+
+                builder.UseTexture(passData.source, AccessFlags.Read);
+                builder.SetRenderAttachment(destination, 0, AccessFlags.Write);
+
+                builder.SetRenderFunc((PassData data, RasterGraphContext context) =>
+                {
+                    data.material.SetFloat("_offset", data.offset);
+                    Blitter.BlitTexture(context.cmd, data.source, new Vector4(1, 1, 0, 0), data.material, 0);
+                });
+            }
+        }
+
+        // Método auxiliar para exponer la textura globalmente al final del grafo
+        private void MakeTextureGlobal(RenderGraph renderGraph, TextureHandle texture, string name)
+        {
+            using (var builder = renderGraph.AddRasterRenderPass<PassData>("ExposeBlurTexture", out var passData))
+            {
+                passData.source = texture;
+                builder.UseTexture(passData.source, AccessFlags.Read);
+                
+                builder.SetRenderFunc((PassData data, RasterGraphContext context) =>
+                {
+                    context.cmd.SetGlobalTexture(name, data.source);
+                });
+            }
         }
     }
 
@@ -130,9 +151,6 @@ public class KawaseBlur : ScriptableRendererFeature
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
-        //scriptablePass.Setup(renderer.cameraColorTargetHandle);
         renderer.EnqueuePass(scriptablePass);
     }
 }
-
-

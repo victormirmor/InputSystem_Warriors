@@ -27,8 +27,8 @@ MonoBehaviour:
     probeSamplingDebugTexture: {fileID: 0}
     probeVolumeBlendStatesCS: {fileID: 0}
   m_RendererFeatures:
-  - {fileID: 1219297600775061884}
-  m_RendererFeatureMap: 7c01af31b5d0eb10
+  - {fileID: 3444916757521409197}
+  m_RendererFeatureMap: ada4dafc89cdce2f
   m_UseNativeRenderPass: 0
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
@@ -56,8 +56,8 @@ MonoBehaviour:
   m_DepthAttachmentFormat: 0
   m_DepthTextureFormat: 0
   m_AccurateGbufferNormals: 0
-  m_IntermediateTextureMode: 1
---- !u!114 &1219297600775061884
+  m_IntermediateTextureMode: 0
+--- !u!114 &3444916757521409197
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -66,14 +66,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25edb37215037d4479c7d82f30c1eba5, type: 3}
-  m_Name: Kawase Blur Pass
-  m_EditorClassIdentifier: 
+  m_Script: {fileID: 11500000, guid: 6b766b651c5a2d140895ca8ee0163c53, type: 3}
+  m_Name: KawaseBlur
+  m_EditorClassIdentifier: Assembly-CSharp::KawaseBlur
   m_Active: 1
   settings:
-    renderPassEvent: 250
-    blurMaterial: {fileID: 2100000, guid: 6356e7fdfba4594419a42f024df505a9, type: 2}
-    blurPasses: 6
+    renderPassEvent: 500
+    blurMaterial: {fileID: 0}
+    blurPasses: 1
     downsample: 1
-    copyToFramebuffer: 1
+    copyToFramebuffer: 0
     targetName: _blurTexture

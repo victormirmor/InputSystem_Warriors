@@ -27,14 +27,21 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
             {
                 if (_instance == null)
                 {
-                    _instance = FindAnyObjectByType<T>();
+                    // LA CORRECCIÓN REAL:
+                    // En las APIs más recientes, usamos la sobrecarga que solo define si incluye o no los inactivos.
+                    // Al omitir el parámetro 'FindObjectsSortMode', Unity usa el modo óptimo por defecto sin advertencias.
+                    T[] managers = FindObjectsByType<T>(FindObjectsInactive.Include);
 
-                    if (FindObjectsByType<T>(FindObjectsSortMode.None).Length > 1)
+                    if (managers.Length > 0)
                     {
-                        Debug.LogError("[Singleton] Something went really wrong " +
-                            " - there should never be more than 1 singleton!" +
-                            " Reopening the scene might fix it.");
-                        return _instance;
+                        _instance = managers[0];
+
+                        if (managers.Length > 1)
+                        {
+                            Debug.LogError("[Singleton] Something went really wrong " +
+                                " - there should never be more than 1 singleton de tipo " + typeof(T) + "!" +
+                                " Reopening the scene might fix it.");
+                        }
                     }
 
                     if (_instance == null)
@@ -46,10 +53,6 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
                         Debug.Log("[Singleton] An instance of " + typeof(T) +
                             " is needed in the scene, so '" + singleton +
                             "' was created.");
-                    }
-                    else
-                    {
-                        //Debug.Log("[Singleton] Using instance already created: " + _instance.gameObject.name);
                     }
                 }
 
@@ -64,7 +67,6 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         {
             return false;
         }
-        // Object exists independent of Scene lifecycle, assume that means it has DontDestroyOnLoad set
         if ((_instance.gameObject.hideFlags & HideFlags.DontSave) == HideFlags.DontSave)
         {
             return true;
@@ -73,14 +75,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     }
 
     private static bool applicationIsQuitting = false;
-    /// <summary>
-    /// When Unity quits, it destroys objects in a random order.
-    /// In principle, a Singleton is only destroyed when application quits.
-    /// If any script calls Instance after it have been destroyed, 
-    ///   it will create a buggy ghost object that will stay on the Editor scene
-    ///   even after stopping playing the Application. Really bad!
-    /// So, this was made to be sure we're not creating that buggy ghost object.
-    /// </summary>
+    
     public void OnDestroy()
     {
         if (IsDontDestroyOnLoad())
