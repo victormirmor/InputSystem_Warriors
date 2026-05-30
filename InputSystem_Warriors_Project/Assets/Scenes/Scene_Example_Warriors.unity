@@ -2539,7 +2539,7 @@ MonoBehaviour:
     type: 3}
   numberOfPlayers: 2
   spawnRingCenter: {fileID: 1568669756}
-  spawnRingRadius: 2
+  spawnRingRadius: 1
 --- !u!4 &1134540116
 Transform:
   m_ObjectHideFlags: 0
@@ -4871,41 +4871,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 942722184034563680, guid: ca9ee4e0ea2b85646be0b08bab27e559,
-        type: 3}
-      propertyPath: m_textAlignment
-      value: 65535
-      objectReference: {fileID: 0}
-    - target: {fileID: 942722184034563680, guid: ca9ee4e0ea2b85646be0b08bab27e559,
-        type: 3}
-      propertyPath: m_TextStyleHashCode
-      value: -1183493901
-      objectReference: {fileID: 0}
-    - target: {fileID: 942722184034563680, guid: ca9ee4e0ea2b85646be0b08bab27e559,
-        type: 3}
-      propertyPath: m_VerticalAlignment
-      value: 512
-      objectReference: {fileID: 0}
-    - target: {fileID: 942722184034563680, guid: ca9ee4e0ea2b85646be0b08bab27e559,
-        type: 3}
-      propertyPath: m_HorizontalAlignment
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 942722184034563680, guid: ca9ee4e0ea2b85646be0b08bab27e559,
-        type: 3}
-      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
-      value: 1801810542
-      objectReference: {fileID: 0}
-    - target: {fileID: 1333498569537319419, guid: ca9ee4e0ea2b85646be0b08bab27e559,
-        type: 3}
-      propertyPath: m_PresetInfoIsWorld
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1743518200311987014, guid: ca9ee4e0ea2b85646be0b08bab27e559,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 4
-      objectReference: {fileID: 0}
     - target: {fileID: 1743518200311987014, guid: ca9ee4e0ea2b85646be0b08bab27e559,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4961,25 +4926,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player_Warrior
       objectReference: {fileID: 0}
-    - target: {fileID: 2605993838031464302, guid: ca9ee4e0ea2b85646be0b08bab27e559,
+    - target: {fileID: 7582353321110905530, guid: ca9ee4e0ea2b85646be0b08bab27e559,
         type: 3}
-      propertyPath: m_textAlignment
-      value: 65535
+      propertyPath: m_AnimatePhysics
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2605993838031464302, guid: ca9ee4e0ea2b85646be0b08bab27e559,
+    - target: {fileID: 7582353321110905530, guid: ca9ee4e0ea2b85646be0b08bab27e559,
         type: 3}
-      propertyPath: m_TextStyleHashCode
-      value: -1183493901
-      objectReference: {fileID: 0}
-    - target: {fileID: 2605993838031464302, guid: ca9ee4e0ea2b85646be0b08bab27e559,
-        type: 3}
-      propertyPath: m_VerticalAlignment
-      value: 512
-      objectReference: {fileID: 0}
-    - target: {fileID: 2605993838031464302, guid: ca9ee4e0ea2b85646be0b08bab27e559,
-        type: 3}
-      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
-      value: 1801810542
+      propertyPath: m_ApplyRootMotion
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
