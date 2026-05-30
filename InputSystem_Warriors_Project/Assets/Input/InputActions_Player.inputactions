@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "InputActions_Player",
     "maps": [
         {
@@ -11,7 +12,8 @@
                     "id": "548e32fd-77d1-40e5-8197-32ca56b41bc0",
                     "expectedControlType": "Vector2",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Look",
@@ -19,7 +21,8 @@
                     "id": "8ebbde1f-3044-41bc-bdac-430e0eae1a68",
                     "expectedControlType": "Vector2",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Attack",
@@ -27,7 +30,8 @@
                     "id": "10fecf58-9483-40e0-ae20-15c8d01a4288",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "Press"
+                    "interactions": "Press",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "TogglePause",
@@ -35,7 +39,8 @@
                     "id": "a70a208e-b491-4921-b460-a0144030ef2a",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press"
+                    "interactions": "Press",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -165,7 +170,7 @@
                     "id": "d23f9eb5-e32b-417b-8edf-d10cd6bdc1d3",
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "InvertVector2(invertX=false)",
                     "groups": "Gamepad",
                     "action": "Look",
                     "isComposite": false,
@@ -183,7 +188,8 @@
                     "id": "538ffe95-ba92-4acb-84f7-314f6ac8e0a5",
                     "expectedControlType": "Vector2",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Left Click",
@@ -191,7 +197,8 @@
                     "id": "96c8be88-a7bb-4861-b5e9-956b4208d043",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Point",
@@ -199,7 +206,8 @@
                     "id": "d54e5ff5-4f35-4d2f-a745-95d14aef8c43",
                     "expectedControlType": "Vector2",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Submit",
@@ -207,7 +215,8 @@
                     "id": "5f571f6a-e9e7-4120-ae3c-79f846bdd202",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Cancel",
@@ -215,7 +224,8 @@
                     "id": "146e681c-77dd-4ff0-9ad5-f4351fea14cc",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "TogglePause",
@@ -223,7 +233,8 @@
                     "id": "e773b1f9-ce5b-4fa2-9c1f-d194202c43b7",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "Press"
+                    "interactions": "Press",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
